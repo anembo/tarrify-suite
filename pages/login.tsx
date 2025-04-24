@@ -27,7 +27,7 @@ export default function LoginPage() {
       await signInWithPopup(auth, provider);
       router.push('/dashboard');
     } catch {
-        setError('Invalid email or password.');
+        setError('Google sign-in failed.');
      }
   };
 
@@ -75,9 +75,9 @@ export default function LoginPage() {
           Continue with Google
         </button>
 
-        <p className="mt-4 text-center text-sm">
-          Don't have an account? <a href="/register" className="text-green-700 hover:underline">Create one</a>
-        </p>
+        <p>
+        Don&apos;t have an account? <a href="/register">Create one</a>
+    </p>
       </form>
     </div>
   );
