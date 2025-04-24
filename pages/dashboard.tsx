@@ -4,10 +4,11 @@ import { auth, db } from '../lib/firebase';
 import { signOut, onAuthStateChanged } from 'firebase/auth';
 import { collection, addDoc, getDocs } from 'firebase/firestore';
 import Image from 'next/image';
+import { User } from 'firebase/auth';
 
 export default function Dashboard() {
   const router = useRouter();
-  const [, setUser] = useState(null);
+  const [, setUser] = useState<User | null>(null);
   const [projects, setProjects] = useState<{ name: string; date: string }[]>([]);
 
   useEffect(() => {
