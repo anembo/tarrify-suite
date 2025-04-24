@@ -90,7 +90,7 @@ export default function Dashboard() {
 
         {/* Decorative Image */}
         <div className="flex justify-center mb-10">
-          <Image src="/landscape-placeholder.png" alt="Landscape" width={500} height={250} className="rounded" />
+          <Image src="/landscape-placeholder.png" alt="Landscape" width={200} height={100} className="rounded" />
         </div>
 
         {/* Projects Table */}
