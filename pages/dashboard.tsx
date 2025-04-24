@@ -1,23 +1,19 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { auth, db } from '../lib/firebase';
-import { signOut, onAuthStateChanged, User } from 'firebase/auth';
-import { collection, getDocs, Timestamp } from 'firebase/firestore';
-import Image from 'next/image';
+import { signOut, onAuthStateChanged } from 'firebase/auth';
+import { collection, getDocs } from 'firebase/firestore';
+import { Timestamp } from 'firebase/firestore';
 
-// Tipo para los Estimates
-type Estimate = {
-  name?: string;
-  projectName?: string;
-  client?: string;
-  description?: string;
-  price?: number;
-  date: Timestamp | string;
-};
+interface Estimate {
+  id: string;
+  name: string;
+  date: Timestamp;
+}
 
 export default function Dashboard() {
   const router = useRouter();
-  const [, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<any>(null);
   const [projects, setProjects] = useState<Estimate[]>([]);
 
   useEffect(() => {
@@ -28,37 +24,35 @@ export default function Dashboard() {
 
     fetchEstimates();
     return () => unsubscribe();
-  }, [router]);
+  }, []);
 
-  const handleLogout = async () => {
-    await signOut(auth);
-    router.push('/login');
+  const fetchEstimates = async () => {
+    const querySnapshot = await getDocs(collection(db, 'estimates'));
+    const estimatesList: Estimate[] = [];
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      estimatesList.push({
+        id: doc.id,
+        name: data.projectName || data.name,
+        date: data.date,
+      });
+    });
+    setProjects(estimatesList);
   };
 
   const handleCreateEstimate = () => {
     router.push('/create-estimate');
   };
 
-  const fetchEstimates = async () => {
-    const querySnapshot = await getDocs(collection(db, "estimates"));
-    const estimatesList: Estimate[] = [];
-    querySnapshot.forEach((doc) => {
-      estimatesList.push(doc.data() as Estimate);
-    });
-    setProjects(estimatesList);
+  const handleLogout = async () => {
+    await signOut(auth);
+    router.push('/login');
   };
 
   return (
-    <div className="flex min-h-screen bg-[#f5f5f0]">
-      {/* Sidebar */}
-      <div className="w-64 bg-green-900 text-white flex flex-col p-6">
-        <div className="flex items-center gap-2 mb-12">
-          <span className="text-3xl">🌳</span>
-          <div className="leading-tight">
-            <h1 className="text-xl font-bold">Tarrify</h1>
-            <span className="text-sm">SUITE</span>
-          </div>
-        </div>
+    <div className="min-h-screen flex">
+      <aside className="w-64 bg-green-900 text-white p-6 space-y-6">
+        <h1 className="text-2xl font-bold">Tarrify Suite</h1>
         <nav className="flex flex-col space-y-4">
           <span className="flex items-center gap-2">📁 Projects</span>
           <button
@@ -67,81 +61,48 @@ export default function Dashboard() {
           >
             📝 Create Estimate
           </button>
+          <button
+            onClick={() => router.push('/products')}
+            className="flex items-center gap-2 hover:underline text-left"
+          >
+            📦 Products
+          </button>
           <span className="flex items-center gap-2">👤 Clients</span>
           <span className="flex items-center gap-2">⚙️ Settings</span>
-        </nav>
-        <div className="mt-auto text-sm text-gray-300">
-          <p className="mb-4">Poppnir</p>
-          <button onClick={handleLogout} className="bg-red-600 hover:bg-red-700 py-2 rounded w-full">
+          <button
+            onClick={handleLogout}
+            className="text-sm text-white mt-10 underline"
+          >
             Logout
           </button>
-        </div>
-      </div>
+        </nav>
+      </aside>
 
-      {/* Main Content */}
-      <div className="flex-1 p-10">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-3xl font-bold text-green-900">Projects</h2>
-          <button
-            onClick={handleCreateEstimate}
-            className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded"
-          >
-            New Estimate
-          </button>
-        </div>
-
-        {/* Decorative Image */}
-        <div className="flex justify-center mb-10">
-          <Image src="/landscape-placeholder.png" alt="Landscape" width={500} height={250} className="rounded" />
-        </div>
-
-        {/* Projects Table Mejorada */}
-        <div className="bg-white p-6 rounded shadow mb-10 overflow-x-auto">
+      <main className="flex-1 p-10">
+        <h2 className="text-3xl font-bold mb-6">Welcome {user?.email}</h2>
+        <div className="bg-white p-6 rounded shadow overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-green-900 text-white">
                 <th className="py-3 px-4">Project Name</th>
-                <th className="py-3 px-4">Client</th>
-                <th className="py-3 px-4">Description</th>
-                <th className="py-3 px-4">Price</th>
                 <th className="py-3 px-4">Date</th>
               </tr>
             </thead>
             <tbody>
               {projects.map((project, index) => (
-                <tr key={index} className={index % 2 === 0 ? "bg-gray-100" : "bg-white"}>
-                  <td className="py-2 px-4">{project.projectName || project.name}</td>
-                  <td className="py-2 px-4">{project.client || 'N/A'}</td>
-                  <td className="py-2 px-4">{project.description || 'N/A'}</td>
+                <tr key={project.id} className={index % 2 === 0 ? "bg-gray-100" : "bg-white"}>
+                  <td className="py-2 px-4">{project.name}</td>
                   <td className="py-2 px-4">
-                    {project.price ? `$${project.price.toLocaleString()}` : 'N/A'}
-                  </td>
-                  <td className="py-2 px-4">
-                    {typeof project.date === 'object' && 'toDate' in project.date
+                    {project.date?.toDate?.() instanceof Date
                       ? project.date.toDate().toLocaleDateString()
-                      : project.date}
+                      : '—'}
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-
-        {/* Clients */}
-        <div className="mb-6">
-          <h3 className="text-xl font-bold mb-2 text-green-900">Clients</h3>
-          <div className="bg-white p-4 rounded shadow">Client</div>
-        </div>
-
-        {/* Settings */}
-        <div>
-          <h3 className="text-xl font-bold mb-2 text-green-900">Settings</h3>
-          <div className="bg-white p-4 rounded shadow flex justify-between">
-            <span>Language</span>
-            <span>English</span>
-          </div>
-        </div>
-      </div>
+      </main>
     </div>
   );
 }
