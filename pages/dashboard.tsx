@@ -4,12 +4,14 @@ import { auth, db } from '../lib/firebase';
 import { signOut, onAuthStateChanged, User } from 'firebase/auth';
 import { collection, addDoc, getDocs } from 'firebase/firestore';
 import Image from 'next/image';
+import { Timestamp } from 'firebase/firestore';
 
 type Estimate = {
   name?: string;
   projectName?: string;
-  date: any;
+  date: Timestamp;
 };
+
 
 
 export default function Dashboard() {
