@@ -5,10 +5,18 @@ import { signOut, onAuthStateChanged, User } from 'firebase/auth';
 import { collection, addDoc, getDocs } from 'firebase/firestore';
 import Image from 'next/image';
 
+type Estimate = {
+  name?: string;
+  projectName?: string;
+  date: any;
+};
+
+
 export default function Dashboard() {
   const router = useRouter();
   const [, setUser] = useState<User | null>(null);
-  const [projects, setProjects] = useState<{ name?: string; projectName?: string; date: any }[]>([]);
+  const [projects, setProjects] = useState<Estimate[]>([]);
+
 
   
   useEffect(() => {
