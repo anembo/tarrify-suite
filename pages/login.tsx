@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { auth } from '../lib/firebase';
+import Image from 'next/image';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -15,9 +16,9 @@ export default function LoginPage() {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       router.push('/dashboard');
-    } catch (err: any) {
-      setError('Invalid email or password.');
-    }
+    } catch {
+        setError('Invalid email or password.');
+     }
   };
 
   const handleGoogleLogin = async () => {
@@ -25,9 +26,9 @@ export default function LoginPage() {
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
       router.push('/dashboard');
-    } catch (err) {
-      setError('Google sign-in failed.');
-    }
+    } catch {
+        setError('Invalid email or password.');
+     }
   };
 
   return (
@@ -66,11 +67,11 @@ export default function LoginPage() {
         </button>
 
         <button
-          type="button"
+          type="button"     
           onClick={handleGoogleLogin}
           className="bg-white border text-gray-700 hover:bg-gray-50 font-bold py-2 px-4 rounded w-full flex items-center justify-center"
         >
-          <img src="/google-icon.svg" alt="Google" className="h-5 w-5 mr-2" />
+          <Image src="/google-icon.svg" alt="Google" width={20} height={20} className="mr-2" />
           Continue with Google
         </button>
 
