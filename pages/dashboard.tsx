@@ -2,25 +2,21 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { auth, db } from '../lib/firebase';
 import { signOut, onAuthStateChanged, User } from 'firebase/auth';
-import { collection, addDoc, getDocs } from 'firebase/firestore';
+import { collection, addDoc, getDocs, Timestamp } from 'firebase/firestore';
 import Image from 'next/image';
-import { Timestamp } from 'firebase/firestore';
 
+// ✅ Definimos el tipo correcto para los Estimates
 type Estimate = {
   name?: string;
   projectName?: string;
   date: Timestamp;
 };
 
-
-
 export default function Dashboard() {
   const router = useRouter();
   const [, setUser] = useState<User | null>(null);
   const [projects, setProjects] = useState<Estimate[]>([]);
 
-
-  
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (!currentUser) router.push('/login');
@@ -37,22 +33,15 @@ export default function Dashboard() {
   };
 
   const handleCreateEstimate = async () => {
-    try {
-      await addDoc(collection(db, "estimates"), {
-        name: "New Landscaping Project",
-        date: new Date().toLocaleDateString(),
-      });
-      fetchEstimates();
-    } catch (error) {
-      console.error("Error adding document: ", error);
-    }
+    router.push('/create-estimate');
   };
 
+  // ✅ Corrección aquí en el tipado
   const fetchEstimates = async () => {
     const querySnapshot = await getDocs(collection(db, "estimates"));
-    const estimatesList: { name: string; date: string }[] = [];
+    const estimatesList: Estimate[] = [];
     querySnapshot.forEach((doc) => {
-      estimatesList.push(doc.data() as { name: string; date: string });
+      estimatesList.push(doc.data() as Estimate);
     });
     setProjects(estimatesList);
   };
@@ -101,7 +90,7 @@ export default function Dashboard() {
 
         {/* Decorative Image */}
         <div className="flex justify-center mb-10">
-          <Image src="/landscape-placeholder.png" alt="Landscape" width={200} height={100} className="rounded" />
+          <Image src="/landscape-placeholder.png" alt="Landscape" width={500} height={250} className="rounded" />
         </div>
 
         {/* Projects Table */}
@@ -114,18 +103,15 @@ export default function Dashboard() {
               </tr>
             </thead>
             <tbody>
-        {projects.map((project, index) => (
-           <tr key={index} className="border-t">
-            <td className="py-2">{project.projectName || project.name}</td>
-           <td className="py-2">
-          {project.date && typeof project.date.toDate === 'function'
-          ? project.date.toDate().toLocaleDateString()
-          : 'No date'}
-          </td>
-         </tr>
-            ))}
-        </tbody>
-
+              {projects.map((project, index) => (
+                <tr key={index} className="border-t">
+                  <td className="py-2">{project.projectName || project.name}</td>
+                  <td className="py-2">
+                    {project.date.toDate().toLocaleDateString()}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
           </table>
         </div>
 
