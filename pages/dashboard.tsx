@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { auth, db } from '../lib/firebase';
-import { signOut, onAuthStateChanged } from 'firebase/auth';
+import { signOut, onAuthStateChanged, User } from 'firebase/auth';
 import { collection, addDoc, getDocs } from 'firebase/firestore';
 import Image from 'next/image';
-import { User } from 'firebase/auth';
 
 export default function Dashboard() {
   const router = useRouter();
@@ -51,7 +50,13 @@ export default function Dashboard() {
     <div className="flex min-h-screen bg-[#f5f5f0]">
       {/* Sidebar */}
       <div className="w-64 bg-green-900 text-white flex flex-col p-6">
-        <h1 className="text-2xl font-bold mb-10">🌳 Tarrify <br /> SUITE</h1>
+        <div className="flex items-center gap-2 mb-12">
+          <span className="text-3xl">🌳</span>
+          <div className="leading-tight">
+            <h1 className="text-xl font-bold">Tarrify</h1>
+            <span className="text-sm">SUITE</span>
+          </div>
+        </div>
         <nav className="flex flex-col space-y-4">
           <span className="flex items-center gap-2">📁 Projects</span>
           <button
@@ -84,8 +89,8 @@ export default function Dashboard() {
         </div>
 
         {/* Decorative Image */}
-        <div className="mb-6">
-          <Image src="/landscape-placeholder.png" alt="Landscape" width={600} height={200} className="rounded" />
+        <div className="flex justify-center mb-10">
+          <Image src="/landscape-placeholder.png" alt="Landscape" width={500} height={250} className="rounded" />
         </div>
 
         {/* Projects Table */}
