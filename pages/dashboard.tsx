@@ -103,13 +103,18 @@ export default function Dashboard() {
               </tr>
             </thead>
             <tbody>
-              {projects.map((project, index) => (
-                <tr key={index} className="border-t">
-                  <td className="py-2">{project.name}</td>
-                  <td className="py-2">{project.date}</td>
-                </tr>
-              ))}
-            </tbody>
+        {projects.map((project, index) => (
+           <tr key={index} className="border-t">
+            <td className="py-2">{project.projectName || project.name}</td>
+           <td className="py-2">
+          {project.date && typeof project.date.toDate === 'function'
+          ? project.date.toDate().toLocaleDateString()
+          : 'No date'}
+          </td>
+         </tr>
+            ))}
+        </tbody>
+
           </table>
         </div>
 
