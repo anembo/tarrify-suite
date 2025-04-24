@@ -8,7 +8,7 @@ import { collection, addDoc, getDocs } from 'firebase/firestore';
 
 export default function Dashboard() {
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
+  const [, setUser] = useState<User | null>(null);
   const [projects, setProjects] = useState<{ name: string; date: string }[]>([]);
 
   useEffect(() => {
