@@ -5,11 +5,11 @@ import { signOut, onAuthStateChanged, User } from 'firebase/auth';
 import { collection, getDocs, Timestamp } from 'firebase/firestore';
 import Image from 'next/image';
 
-// ✅ Definimos el tipo correcto para los Estimates
+// Tipo definido para los estimates
 type Estimate = {
   name?: string;
   projectName?: string;
-  date: Timestamp;
+  date: Timestamp | string;  // Aceptamos Timestamp o string
 };
 
 export default function Dashboard() {
@@ -32,11 +32,10 @@ export default function Dashboard() {
     router.push('/login');
   };
 
-  const handleCreateEstimate = async () => {
+  const handleCreateEstimate = () => {
     router.push('/create-estimate');
   };
 
-  // ✅ Corrección aquí en el tipado
   const fetchEstimates = async () => {
     const querySnapshot = await getDocs(collection(db, "estimates"));
     const estimatesList: Estimate[] = [];
@@ -107,7 +106,9 @@ export default function Dashboard() {
                 <tr key={index} className="border-t">
                   <td className="py-2">{project.projectName || project.name}</td>
                   <td className="py-2">
-                    {project.date.toDate().toLocaleDateString()}
+                    {project.date && typeof (project.date as any).toDate === 'function'
+                      ? (project.date as Timestamp).toDate().toLocaleDateString()
+                      : project.date}
                   </td>
                 </tr>
               ))}
