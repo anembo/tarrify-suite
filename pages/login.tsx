@@ -36,10 +36,8 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <form onSubmit={handleEmailLogin} className="bg-white shadow-md rounded px-8 pt-6 pb-8 w-full max-w-sm">
         <h2 className="text-2xl font-bold mb-6 text-center">Tarrify Suite</h2>
-        {error && <p className="mt-4 text-center text-sm">
-  Don&apos;t have an account?{' '}
-  <Link href="/register" className="text-green-700 hover:underline">Create one</Link>
-</p>}
+        {error && <p className="text-red-600 mb-4 text-sm text-center">{error}</p>}
+
         
         <div className="mb-4">
           <label className="block text-gray-700 text-sm font-bold mb-2">Email</label>
@@ -79,9 +77,11 @@ export default function LoginPage() {
           Continue with Google
         </button>
 
-        <p>
-        Don&apos;t have an account? <Link href="/register" className="text-green-700 hover:underline">Create one</Link>
-    </p>
+    <p className="mt-4 text-center text-sm">
+  Don&apos;t have an account?{' '}
+  <Link href="/register" className="text-green-700 hover:underline">Create one</Link>
+</p>
+
       </form>
     </div>
   );
