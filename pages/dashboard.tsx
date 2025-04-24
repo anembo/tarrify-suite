@@ -6,10 +6,10 @@ import Link from 'next/link';
 import { db } from '../lib/firebase';
 import { collection, addDoc, getDocs } from 'firebase/firestore';
 
-
 export default function Dashboard() {
   const router = useRouter();
-  const [, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [projects, setProjects] = useState<{ name: string; date: string }[]>([]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -20,6 +20,7 @@ export default function Dashboard() {
       }
     });
 
+    fetchEstimates();
     return () => unsubscribe();
   }, [router]);
 
@@ -28,23 +29,6 @@ export default function Dashboard() {
     router.push('/login');
   };
 
-
-  const [projects, setProjects] = useState<{ name: string; date: string }[]>([]);
-
-const fetchEstimates = async () => {
-  const querySnapshot = await getDocs(collection(db, "estimates"));
-  const estimatesList: any = [];
-  querySnapshot.forEach((doc) => {
-    estimatesList.push(doc.data());
-  });
-  setProjects(estimatesList);
-};
-
-useEffect(() => {
-  fetchEstimates();
-}, []);
-
-
   const handleCreateEstimate = async () => {
     try {
       await addDoc(collection(db, "estimates"), {
@@ -52,12 +36,20 @@ useEffect(() => {
         date: new Date().toLocaleDateString(),
       });
       alert("Estimate created!");
-      fetchEstimates();  // Actualiza la lista después de crear
+      fetchEstimates();
     } catch (error) {
       console.error("Error adding document: ", error);
     }
   };
-  
+
+  const fetchEstimates = async () => {
+    const querySnapshot = await getDocs(collection(db, "estimates"));
+    const estimatesList: { name: string; date: string }[] = [];
+    querySnapshot.forEach((doc) => {
+      estimatesList.push(doc.data() as { name: string; date: string });
+    });
+    setProjects(estimatesList);
+  };
 
   return (
     <div className="flex min-h-screen bg-gray-100">
@@ -66,43 +58,53 @@ useEffect(() => {
         <h1 className="text-2xl font-bold mb-10">Tarrify Suite</h1>
         <nav className="flex flex-col space-y-4">
           <Link href="#" className="hover:text-green-300">📁 Projects</Link>
-          <Link href="#" className="bg-orange-600 px-3 py-2 rounded hover:bg-orange-700 text-center">✏️ Create Estimate</Link>
+          <button
+            onClick={handleCreateEstimate}
+            className="bg-orange-600 px-3 py-2 rounded hover:bg-orange-700 text-center"
+          >
+            ✏️ Create Estimate
+          </button>
           <Link href="#" className="hover:text-green-300">👤 Clients</Link>
           <Link href="#" className="hover:text-green-300">⚙️ Settings</Link>
         </nav>
-        <button
-         onClick={handleCreateEstimate}
-        className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded"
-        >
-        New Estimate
+        <button onClick={handleLogout} className="mt-auto bg-red-600 hover:bg-red-700 py-2 rounded text-center">
+          Logout
         </button>
-
       </div>
 
       {/* Main Content */}
       <div className="flex-1 p-8">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-3xl font-bold">Projects</h2>
-          <button className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded">New Estimate</button>
+          <button
+            onClick={handleCreateEstimate}
+            className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded"
+          >
+            New Estimate
+          </button>
         </div>
 
         <div className="bg-white p-6 rounded shadow">
-          <table className="w-full text-left">
-            <thead>
-              <tr>
-                <th className="pb-2">Name</th>
-                <th className="pb-2">Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {projects.map((project, index) => (
-                <tr key={index} className="border-t">
-                  <td className="py-2">{project.name}</td>
-                  <td className="py-2">{project.date}</td>
+          {projects.length === 0 ? (
+            <p>No estimates found.</p>
+          ) : (
+            <table className="w-full text-left">
+              <thead>
+                <tr>
+                  <th className="pb-2">Name</th>
+                  <th className="pb-2">Date</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {projects.map((project, index) => (
+                  <tr key={index} className="border-t">
+                    <td className="py-2">{project.name}</td>
+                    <td className="py-2">{project.date}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
 
         <div className="mt-10">
