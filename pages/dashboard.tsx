@@ -5,11 +5,14 @@ import { signOut, onAuthStateChanged, User } from 'firebase/auth';
 import { collection, getDocs, Timestamp } from 'firebase/firestore';
 import Image from 'next/image';
 
-// Tipo definido para los estimates
+// Tipo para los Estimates
 type Estimate = {
   name?: string;
   projectName?: string;
-  date: Timestamp | string;  // Aceptamos Timestamp o string
+  client?: string;
+  description?: string;
+  price?: number;
+  date: Timestamp | string;
 };
 
 export default function Dashboard() {
@@ -92,24 +95,32 @@ export default function Dashboard() {
           <Image src="/landscape-placeholder.png" alt="Landscape" width={500} height={250} className="rounded" />
         </div>
 
-        {/* Projects Table */}
-        <div className="bg-white p-6 rounded shadow mb-10">
-          <table className="w-full text-left">
+        {/* Projects Table Mejorada */}
+        <div className="bg-white p-6 rounded shadow mb-10 overflow-x-auto">
+          <table className="w-full text-left border-collapse">
             <thead>
-              <tr>
-                <th className="pb-2">Name</th>
-                <th className="pb-2">Date</th>
+              <tr className="bg-green-900 text-white">
+                <th className="py-3 px-4">Project Name</th>
+                <th className="py-3 px-4">Client</th>
+                <th className="py-3 px-4">Description</th>
+                <th className="py-3 px-4">Price</th>
+                <th className="py-3 px-4">Date</th>
               </tr>
             </thead>
             <tbody>
               {projects.map((project, index) => (
-                <tr key={index} className="border-t">
-                  <td className="py-2">{project.projectName || project.name}</td>
-                  <td className="py-2">
-                {typeof project.date === 'object' && 'toDate' in project.date
-                  ? project.date.toDate().toLocaleDateString()
-                  : project.date}
-                </td>
+                <tr key={index} className={index % 2 === 0 ? "bg-gray-100" : "bg-white"}>
+                  <td className="py-2 px-4">{project.projectName || project.name}</td>
+                  <td className="py-2 px-4">{project.client || 'N/A'}</td>
+                  <td className="py-2 px-4">{project.description || 'N/A'}</td>
+                  <td className="py-2 px-4">
+                    {project.price ? `$${project.price.toLocaleString()}` : 'N/A'}
+                  </td>
+                  <td className="py-2 px-4">
+                    {typeof project.date === 'object' && 'toDate' in project.date
+                      ? project.date.toDate().toLocaleDateString()
+                      : project.date}
+                  </td>
                 </tr>
               ))}
             </tbody>
