@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { auth } from '../lib/firebase';
 import Image from 'next/image';
-
+import Link from 'next/link';
 export default function RegisterPage() {
   const router = useRouter();
   const [fullName, setFullName] = useState('');
@@ -107,8 +107,9 @@ export default function RegisterPage() {
         </button>
 
         <p className="mt-4 text-center text-sm">
-          Already have an account? <a href="/login" className="text-green-700 hover:underline">Sign In</a>
-        </p>
+  Already have an account?{' '}
+  <Link href="/login" className="text-green-700 hover:underline">Sign In</Link>
+</p>
       </form>
     </div>
   );
