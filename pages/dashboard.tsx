@@ -8,8 +8,9 @@ import Image from 'next/image';
 export default function Dashboard() {
   const router = useRouter();
   const [, setUser] = useState<User | null>(null);
-  const [projects, setProjects] = useState<{ name: string; date: string }[]>([]);
+  const [projects, setProjects] = useState<{ name?: string; projectName?: string; date: any }[]>([]);
 
+  
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (!currentUser) router.push('/login');
