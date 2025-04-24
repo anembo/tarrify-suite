@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { auth, db } from '../lib/firebase';
-import { signOut, onAuthStateChanged } from 'firebase/auth';
+import { signOut, onAuthStateChanged, User } from 'firebase/auth';
 import { collection, getDocs } from 'firebase/firestore';
 import { Timestamp } from 'firebase/firestore';
 
@@ -13,7 +13,7 @@ interface Estimate {
 
 export default function Dashboard() {
   const router = useRouter();
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [projects, setProjects] = useState<Estimate[]>([]);
 
   useEffect(() => {
@@ -24,7 +24,7 @@ export default function Dashboard() {
 
     fetchEstimates();
     return () => unsubscribe();
-  }, []);
+  }, [router]);
 
   const fetchEstimates = async () => {
     const querySnapshot = await getDocs(collection(db, 'estimates'));
