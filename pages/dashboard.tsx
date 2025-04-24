@@ -106,11 +106,10 @@ export default function Dashboard() {
                 <tr key={index} className="border-t">
                   <td className="py-2">{project.projectName || project.name}</td>
                   <td className="py-2">
-                  {'toDate' in project.date
-                    ? project.date.toDate().toLocaleDateString()
-                    : project.date}
-</td>
-
+                {typeof project.date === 'object' && 'toDate' in project.date
+                  ? project.date.toDate().toLocaleDateString()
+                  : project.date}
+                </td>
                 </tr>
               ))}
             </tbody>
