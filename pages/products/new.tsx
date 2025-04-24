@@ -37,9 +37,10 @@ export default function NewProduct() {
         </div>
 
         <div className="mb-4">
-          <label className="block mb-1 font-bold">Price</label>
+          <label className="block mb-1 font-bold">Price ($)</label>
           <input
             type="number"
+            step="0.01"
             className="border rounded w-full px-3 py-2"
             value={price}
             onChange={(e) => setPrice(parseFloat(e.target.value))}
@@ -48,16 +49,20 @@ export default function NewProduct() {
         </div>
 
         <div className="mb-4">
-          <label className="block mb-1 font-bold">Type</label>
+          <label className="block mb-1 font-bold">Unit Type</label>
           <select
             className="border rounded w-full px-3 py-2"
             value={type}
             onChange={(e) => setType(e.target.value)}
           >
-            <option value="unit">Unit</option>
-            <option value="kg">Kg</option>
-            <option value="m2">m²</option>
-            <option value="other">Other</option>
+            <option value="unit">Unit (piece)</option>
+            <option value="ft">Feet (ft)</option>
+            <option value="sqft">Square Feet (sqft)</option>
+            <option value="cuft">Cubic Feet (cuft)</option>
+            <option value="yd3">Cubic Yards (yd³)</option>
+            <option value="gal">Gallons (gal)</option>
+            <option value="lb">Pounds (lb)</option>
+            <option value="ton">Tons (ton)</option>
           </select>
         </div>
 
