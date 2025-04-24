@@ -3,6 +3,9 @@ import { useRouter } from 'next/router';
 import { auth } from '../lib/firebase';
 import { signOut, onAuthStateChanged, User } from 'firebase/auth';
 import Link from 'next/link';
+import { db } from '../lib/firebase';
+import { collection, addDoc, getDocs } from 'firebase/firestore';
+
 
 export default function Dashboard() {
   const router = useRouter();
@@ -25,11 +28,36 @@ export default function Dashboard() {
     router.push('/login');
   };
 
-  const projects = [
-    { name: 'Patio Installation', date: '03/15/2024' },
-    { name: 'Retaining Wall', date: '02/20/2024' },
-    { name: 'Walkway', date: '01/10/2024' },
-  ];
+
+  const [projects, setProjects] = useState<{ name: string; date: string }[]>([]);
+
+const fetchEstimates = async () => {
+  const querySnapshot = await getDocs(collection(db, "estimates"));
+  const estimatesList: any = [];
+  querySnapshot.forEach((doc) => {
+    estimatesList.push(doc.data());
+  });
+  setProjects(estimatesList);
+};
+
+useEffect(() => {
+  fetchEstimates();
+}, []);
+
+
+  const handleCreateEstimate = async () => {
+    try {
+      await addDoc(collection(db, "estimates"), {
+        name: "New Landscaping Project",
+        date: new Date().toLocaleDateString(),
+      });
+      alert("Estimate created!");
+      fetchEstimates();  // Actualiza la lista después de crear
+    } catch (error) {
+      console.error("Error adding document: ", error);
+    }
+  };
+  
 
   return (
     <div className="flex min-h-screen bg-gray-100">
@@ -42,9 +70,13 @@ export default function Dashboard() {
           <Link href="#" className="hover:text-green-300">👤 Clients</Link>
           <Link href="#" className="hover:text-green-300">⚙️ Settings</Link>
         </nav>
-        <button onClick={handleLogout} className="mt-auto bg-red-600 hover:bg-red-700 py-2 rounded text-center">
-          Logout
+        <button
+         onClick={handleCreateEstimate}
+        className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded"
+        >
+        New Estimate
         </button>
+
       </div>
 
       {/* Main Content */}
