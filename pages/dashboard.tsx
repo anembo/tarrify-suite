@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { auth, db } from '../lib/firebase';
 import { signOut, onAuthStateChanged, User } from 'firebase/auth';
-import { collection, addDoc, getDocs, Timestamp } from 'firebase/firestore';
+import { collection, getDocs, Timestamp } from 'firebase/firestore';
 import Image from 'next/image';
 
 // ✅ Definimos el tipo correcto para los Estimates
